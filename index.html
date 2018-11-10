@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="twitter:image" content="https://parzibyte.me/blog/wp-content/uploads/2018/11/Explicación-hexadecimal-a-decimal-con-VueJS-y-JS.png" />
+    <meta name="twitter:description" content="Explicación de conversión de hexadecimal a decimal manualmente. Paso a paso para llegar al resultado" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="description" content="Explicación de conversión de hexadecimal a decimal manualmente. Paso a paso para llegar al resultado">
+    <meta property="og:image" content="https://parzibyte.me/blog/wp-content/uploads/2018/11/Explicación-hexadecimal-a-decimal-con-VueJS-y-JS.png" />
+    <meta property="og:locale" content="es_LA" />
+    <meta property="og:url" content="https://www.parzibyte.me/apps/conversion-hexadecimal-decimal/" />
+    <meta property="og:site_name" content="Parzibyte.me" />
+    <meta property="og:title" content="Explicación de hexadecimal a decimal: conversión manual" />
+    <meta property="og:description" content='Explicación de conversión de hexadecimal a decimal manualmente. Paso a paso para llegar al resultado' />
+    <title>Convertir hexadecimal a decimal manualmente, explicado con JS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="section">
+        <div id="app" class="container is-fluid">
+            <div class="columns">
+                <div class="column">
+                    <h1 class="is-size-2">Conversión Hexadecimal - Decimal</h1>
+                    <div class="notification is-info">
+                        <p>
+                            Esta pequeña aplicación web <strong>explica cómo convertir un número hexadecimal a decimal
+                                paso a paso</strong>.
+                            <br>
+                            Simplemente <strong>escribe tu número hexadecimal</strong> y mira cómo se transforma.
+                            <br>
+                            Basado en <a target="_blank" href="http://arantxa.ii.uam.es/~ig/practicas/enunciados/prac3/hexadecimaldecimal.pdf">este
+                                documento</a> (se aplica el método 2). Agradecimientos a quien lo haya creado.</p>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Escribe el número hexadecimal</label>
+                        <div class="control">
+                            <input ref="inputPrincipal" v-model="numeroHexadecimal" class="input" type="text"
+                                placeholder="8BC34A">
+                        </div>
+                    </div>
+                    <div class="content">
+                        <blockquote>
+                            Para convertir un número hexadecimal a su equivalente decimal, multiplicar el valor decimal
+                            de
+                            cada dígito hexadecimal por su peso, y luego realizar la suma de estos productos. Los pesos
+                            de un número hexadecimal crecen según las potencias de 16 (de derecha a izquierda)
+                        </blockquote>
+                    </div>
+                    <div v-show="numeroDecimal">
+                        <h1 class="is-size-3">{{numeroHexadecimal}} <sub>16</sub> = {{numeroDecimal}} <sub>10</sub></h1>
+                        <p>
+                            <strong>Paso 1:</strong> descomponer el número en dígitos y poner la potencia a la que se
+                            eleva
+                            el 16
+                            <br>
+                            <code>
+                                    <span v-for="(operacion, indice) in operaciones[0]">
+                                            ({{operacion}}) {{indice === operaciones[0].length - 1 ? '' : '+'}}
+                                    </span>
+                            </code>
+                            <br><br>
+                        </p>
+                        <p>
+                            <strong>Paso 2:</strong> convertir (si es necesario) las letras a números. Por ejemplo, A =
+                            10,
+                            B = 11 y así sucesivamente
+                            <br>
+                            <code>
+                                    <span v-for="(operacion, indice) in operaciones[1]">
+                                            ({{operacion}}) {{indice === operaciones[1].length - 1 ? '' : '+'}}
+                                    </span>
+                            </code>
+                            <br><br>
+                        </p>
+                        <p>
+                            <strong>Paso 3:</strong> elevamos 16 a la potencia que indica su posición
+                            <br>
+                            <code>
+                                    <span v-for="(operacion, indice) in operaciones[2]">
+                                            ({{operacion}}) {{indice === operaciones[2].length - 1 ? '' : '+'}}
+                                    </span>
+                            </code>
+                            <br><br>
+                        </p>
+                        <p>
+                            <strong>Paso 4:</strong> multiplicamos el dígito hexadecimal por el resultado de elevar 16
+                            a la
+                            potencia en el paso anterior
+                            <br>
+                            <code>
+                                    <span v-for="(operacion, indice) in operaciones[3]">
+                                            ({{operacion}}) {{indice === operaciones[3].length - 1 ? '' : '+'}}
+                                    </span>
+                            </code>
+                            <br><br>
+                        </p>
+                        <p>
+                            <strong>Paso 5: </strong> sumar. Y el resultado es...
+                        </p>
+                        <h1 class="is-size-2">{{numeroDecimal}} <sub>10</sub></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <strong>Explicación de la conversión de números hexadecimales a decimales
+                </strong> creado y mantenido por <a target="_blank" href="https://parzibyte.me/blog/sobre-el-autor">Luis
+                    Cabrera Benito aka parzibyte</a>.
+                <br>
+                Si lo deseas, visita el repositorio online
+                <a href="https://github.com/parzibyte/conversion-hexadecimal-decimal">
+                    <i class="fa fa-github"></i>
+                </a>
+                .
+                <br>
+                Sígueme:
+
+                <a href="https://twitter.com/parzibyte" target="_blank">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                <a href="https://facebook.com/parzibyte.fanpage" target="_blank">
+                    <i class="fa fa-facebook-square"></i>
+                </a>
+                <a href="https://github.com/parzibyte" target="_blank">
+                    <i class="fa fa-github"></i>
+                </a>
+            </p>
+        </div>
+    </footer>
+</body>
+<script src="https://vuejs.org/js/vue.min.js"></script>
+<script src="script.js"></script>
+
+</html>
