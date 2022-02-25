@@ -12,16 +12,17 @@
         content="Explicación de conversión de hexadecimal a decimal manualmente. Paso a paso para llegar al resultado" />
     <meta name="twitter:card" content="summary" />
     <meta name="description"
-        content="Explicación de conversión de hexadecimal a decimal manualmente. Paso a paso para llegar al resultado">
+        content="Explicación de conversión de cualquier base (binario, octal, hexadecimal) a decimal manualmente. Pasos para llegar al resultado">
     <meta property="og:image"
         content="https://parzibyte.me/blog/wp-content/uploads/2018/11/Explicación-hexadecimal-a-decimal-con-VueJS-y-JS.png" />
     <meta property="og:locale" content="es_LA" />
-    <meta property="og:url" content="https://parzibyte.github.io/conversion-hexadecimal-decimal/" />
+    <meta property="og:url" content="https://www.parzibyte.me/apps/conversion-hexadecimal-decimal/" />
     <meta property="og:site_name" content="Parzibyte.me" />
-    <meta property="og:title" content="Explicación de hexadecimal a decimal: conversión manual" />
+    <meta property="og:title"
+        content="Explicación de cualquier base (binario, octal, hexadecimal) a decimal: conversión manual" />
     <meta property="og:description"
-        content='Explicación de conversión de hexadecimal a decimal manualmente. Paso a paso para llegar al resultado' />
-    <title>Convertir hexadecimal a decimal manualmente, explicado con JS</title>
+        content='Explicación de conversión de cualquier base (binario, octal, hexadecimal) a decimal manualmente. Paso a paso para llegar al resultado' />
+    <title>Convertir cualquier base (binario, octal, hexadecimal) a decimal manualmente con pasos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
         integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
@@ -32,41 +33,54 @@
         <div id="app" class="container is-fluid">
             <div class="columns">
                 <div class="column">
-                    <h1 class="is-size-2">Conversión Hexadecimal - Decimal</h1>
+                    <h1 class="is-size-2">Conversión de cualquier base (binario, octal, hexadecimal) a decimal</h1>
                     <div class="notification is-info">
                         <p>
-                            Esta pequeña aplicación web <strong>explica cómo convertir un número hexadecimal a decimal
+                            Esta pequeña aplicación web <strong>explica cómo convertir un número de cualquier base a
+                                decimal
                                 paso a paso</strong>.
                             <br>
-                            Simplemente <strong>escribe tu número hexadecimal</strong> y mira cómo se transforma.
+                            Simplemente <strong>selecciona la base, escribe tu número </strong> y mira cómo se
+                            transforma.
                             <br>
                             Basado en <a target="_blank"
                                 href="http://arantxa.ii.uam.es/~ig/practicas/enunciados/prac3/hexadecimaldecimal.pdf">este
                                 documento</a> (se aplica el método 2). Agradecimientos a quien lo haya creado.
                         </p>
                     </div>
-
                     <div class="field">
-                        <label class="label">Escribe el número hexadecimal</label>
+                        <label class="label">Selecciona la base:</label>
                         <div class="control">
-                            <input ref="inputPrincipal" v-model="numeroHexadecimal" class="input" type="text"
+                            <div class="select">
+                                <select @change="calcular" v-model="baseSeleccionada" class="select">
+                                    <option v-for="base in bases" :value="base" :key="base">{{base}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Escribe el número a convertir:</label>
+                        <div class="control">
+                            <input ref="inputPrincipal" v-model="numeroParaConvertir" class="input" type="text"
                                 placeholder="8BC34A">
                         </div>
                     </div>
                     <div class="content">
                         <blockquote>
-                            Para convertir un número hexadecimal a su equivalente decimal, multiplicar el valor decimal
+                            Para convertir un número de otra base a su equivalente decimal, multiplicar el valor decimal
                             de
-                            cada dígito hexadecimal por su peso, y luego realizar la suma de estos productos. Los pesos
-                            de un número hexadecimal crecen según las potencias de 16 (de derecha a izquierda)
+                            cada dígito en la base seleccionada por su peso, y luego realizar la suma de estos
+                            productos. Los pesos
+                            de un número crecen según las potencias de la base (de derecha a izquierda)
                         </blockquote>
                     </div>
                     <div v-show="numeroDecimal">
-                        <h1 class="is-size-3">{{numeroHexadecimal}} <sub>16</sub> = {{numeroDecimal}} <sub>10</sub></h1>
+                        <h1 class="is-size-3">{{numeroParaConvertir}} <sub>{{baseSeleccionada}}</sub> =
+                            {{numeroDecimal}} <sub>10</sub></h1>
                         <p>
                             <strong>Paso 1:</strong> descomponer el número en dígitos y poner la potencia a la que se
                             eleva
-                            el 16
+                            el {{baseSeleccionada}}
                             <br>
                             <code>
                                     <span v-for="(operacion, indice) in operaciones[0]">
@@ -76,7 +90,8 @@
                             <br><br>
                         </p>
                         <p>
-                            <strong>Paso 2:</strong> convertir (si es necesario) las letras a números. Por ejemplo, A =
+                            <strong>Paso 2:</strong> convertir (si es necesario) las letras a números. Por ejemplo, para
+                            hexadecimal A =
                             10,
                             B = 11 y así sucesivamente
                             <br>
@@ -88,7 +103,7 @@
                             <br><br>
                         </p>
                         <p>
-                            <strong>Paso 3:</strong> elevamos 16 a la potencia que indica su posición
+                            <strong>Paso 3:</strong> elevamos {{baseSeleccionada}} a la potencia que indica su posición
                             <br>
                             <code>
                                     <span v-for="(operacion, indice) in operaciones[2]">
@@ -98,7 +113,8 @@
                             <br><br>
                         </p>
                         <p>
-                            <strong>Paso 4:</strong> multiplicamos el dígito hexadecimal por el resultado de elevar 16
+                            <strong>Paso 4:</strong> multiplicamos el dígito por el resultado de elevar
+                            {{baseSeleccionada}}
                             a la
                             potencia en el paso anterior
                             <br>
@@ -121,7 +137,8 @@
     <footer class="footer">
         <div class="content has-text-centered">
             <p>
-                <strong>Explicación de la conversión de números hexadecimales a decimales
+                <strong>Explicación de la conversión de números de cualquier base (binario, octal, hexadecimal) a
+                    decimal
                 </strong> creado y mantenido por <a target="_blank" href="https://parzibyte.me/blog/sobre-el-autor">Luis
                     Cabrera Benito aka parzibyte</a>.
                 <br>
@@ -147,6 +164,7 @@
     </footer>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-toasted"> </script>
 <script src="script.js"></script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4859317680104877"
     crossorigin="anonymous"></script>

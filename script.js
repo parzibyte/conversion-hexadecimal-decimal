@@ -1,52 +1,57 @@
 /**
- * Explicar conversión hexadecimal a decimal usando JavaScript
+ * Explicar conversión de cualquier base a decimal usando JavaScript
  * Hecho con Vue.JS 2 + Bulma CSS
  * @author parzibyte
  */
-const equivalencias = {
-    "0": 0,
-    "1": 1,
-    "2": 2,
-    "3": 3,
-    "4": 4,
-    "5": 5,
-    "6": 6,
-    "7": 7,
-    "8": 8,
-    "9": 9,
-    "A": 10,
-    "B": 11,
-    "C": 12,
-    "D": 13,
-    "E": 14,
-    "F": 15,
-};
-const BASE = 16;
-/**
- * 
- * Comprobar si una cadena es un número hexadecimal usando
- * expresiones regulares
- * @author parzibyte
- * Visita: parzibyte.me
- */
 
-const esHexadecimal = numeroHexadecimal => /^[0-9A-F]+$/ig.test(numeroHexadecimal);
+const BINARIO = 2, OCTAL = 8, HEXADECIMAL = 16;
+Vue.use(Toasted);
 const app = new Vue({
     el: '#app',
     data: () => ({
+        bases: [BINARIO, OCTAL, HEXADECIMAL],
+        baseSeleccionada: BINARIO,
+        numeroParaConvertir: null,
         operaciones: [
             [],
             [],
             [],
             [],
         ],
-        numeroHexadecimal: "",
         numeroDecimal: null,
     }),
     mounted() {
-        this.$refs.inputPrincipal.focus();
+        this.enfocarInput();
     },
     methods: {
+        enfocarInput() {
+            this.$refs.inputPrincipal.focus();
+        },
+        obtenerEquivalencia(digito) {
+            if (this.baseSeleccionada === BINARIO || this.baseSeleccionada === OCTAL) {
+                return parseInt(digito);
+            }
+            if (this.baseSeleccionada === HEXADECIMAL) {
+                return {
+                    "0": 0,
+                    "1": 1,
+                    "2": 2,
+                    "3": 3,
+                    "4": 4,
+                    "5": 5,
+                    "6": 6,
+                    "7": 7,
+                    "8": 8,
+                    "9": 9,
+                    "A": 10,
+                    "B": 11,
+                    "C": 12,
+                    "D": 13,
+                    "E": 14,
+                    "F": 15,
+                }[digito];
+            };
+        },
         resetear() {
             this.operaciones = [
                 [],
@@ -56,27 +61,47 @@ const app = new Vue({
             ];
             this.numeroDecimal = null;
         },
+        esNumeroValido(numero) {
+            if (this.baseSeleccionada === BINARIO) {
+                return numero.split("").every(digito => "01".includes(digito));
+            }
+
+            if (this.baseSeleccionada === OCTAL) {
+                return numero.split("").every(digito => "01234567".includes(digito));
+            }
+            if (this.baseSeleccionada === HEXADECIMAL) {
+                return numero.split("").every(digito => "0123456789ABCDEF".includes(digito));
+            }
+        },
         calcular() {
             this.resetear();
-            let numeroHexadecimal = this.numeroHexadecimal;
-            if (!esHexadecimal(numeroHexadecimal)) return;
-            const longitudDeLaCadena = numeroHexadecimal.length;
+            if (!this.numeroParaConvertir) {
+                return;
+            }
+            let numeroParaConvertir = this.numeroParaConvertir.toUpperCase();
+            if (!this.esNumeroValido(numeroParaConvertir)) {
+                return this.$toasted.show("Número inválido", {
+                    duration: 1500,
+                    theme: "bubble",
+                    position: "bottom-center",
+                });
+            }
+            const longitudDeLaCadena = numeroParaConvertir.length;
             let potencia = 0;
             let decimal = 0;
             for (let indice = longitudDeLaCadena - 1; indice >= 0; indice--) {
 
-                let letra = numeroHexadecimal.charAt(indice).toUpperCase();
+                let digitoActual = numeroParaConvertir.charAt(indice).toUpperCase();
 
 
-                // Tomar el valor entero de la letra. Por ejemplo A=10
-                let equivalencia = equivalencias[letra];
-                // Elevar el 16 a la potencia 0, luego a la 1 y así
+                let equivalencia = this.obtenerEquivalencia(digitoActual);
+                // Elevar la base seleccionada a la potencia 0, luego a la 1 y así
                 // (este valor es dado por la potencia que vamos incrementando en el ciclo)
-                let multiplicador = Math.pow(BASE, potencia);
+                let multiplicador = Math.pow(this.baseSeleccionada, potencia);
 
 
-                this.operaciones[0].push(`${letra} x (${BASE} ^ ${potencia})`);
-                this.operaciones[1].push(`${equivalencia} x (${BASE} ^ ${potencia})`);
+                this.operaciones[0].push(`${digitoActual} x (${this.baseSeleccionada} ^ ${potencia})`);
+                this.operaciones[1].push(`${equivalencia} x (${this.baseSeleccionada} ^ ${potencia})`);
                 this.operaciones[2].push(`${equivalencia} x ${multiplicador}`);
 
 
@@ -94,8 +119,11 @@ const app = new Vue({
         }
     },
     watch: {
-        numeroHexadecimal() {
+        numeroParaConvertir() {
             this.calcular();
+        },
+        baseSeleccionada() {
+            this.enfocarInput();
         }
     },
 });
